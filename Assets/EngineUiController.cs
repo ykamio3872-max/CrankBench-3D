@@ -1,59 +1,74 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using XCharts.Runtime;
+using UnityEngine.UIElements; // ★変更: uGUI/TMProではなくUIElementsを使う
 
 public class EngineUiController : MonoBehaviour
 {
     [Header("References to 3D Engine")]
-    [SerializeField] private EngineController engineController;
+    [SerializeField] private EngineController engineController; // ★ここはそのまま再利用
 
-    [Header("UI Controls (Inputs)")]
-    [SerializeField] private Slider rpmSlider;
-    [SerializeField] private Slider boreSlider;       // ★追加
-    [SerializeField] private Slider strokeSlider;
-    [SerializeField] private Slider conrodSlider;
-    [SerializeField] private Slider boostSlider;      // ★追加
+    // UI Toolkitでは、Inspectorからアタッチするのではなくスクリプト内で取得します
+    private Slider rpmSlider;
+    private Slider boreSlider;
+    private Slider strokeSlider;
+    private Slider conrodSlider;
+    private Slider boostSlider;
 
-    [Header("UI Value Displays (Inputs - スライダーの隣)")]
-    [SerializeField] private TextMeshProUGUI rpmText;
-    [SerializeField] private TextMeshProUGUI boreText;      // ★追加
-    [SerializeField] private TextMeshProUGUI strokeText;
-    [SerializeField] private TextMeshProUGUI conrodText;
-    [SerializeField] private TextMeshProUGUI boostText;     // ★追加
+    private Label rpmText;
+    private Label boreText;
+    private Label strokeText;
+    private Label conrodText;
+    private Label boostText;
 
-    [Header("UI Status Displays (Outputs - 画面右下)")]
-    [SerializeField] private TextMeshProUGUI angleText;
-    [SerializeField] private TextMeshProUGUI pressureText;
-    [SerializeField] private TextMeshProUGUI temperatureText;
-    [SerializeField] private TextMeshProUGUI strokePhaseText;
+    private Label angleText;
+    private Label pressureText;
+    private Label temperatureText;
+    private Label strokePhaseText;
 
-    [Header("UI Graphs (XCharts)")]
-    [SerializeField] private LineChart pvChart; // LineChart を使用
-
-    void Start()
+    void OnEnable() // ★Startではなく、UIが有効になったタイミングで取得します
     {
-        if (engineController == null || rpmSlider == null || boreSlider == null || strokeSlider == null || conrodSlider == null || boostSlider == null)
+        if (engineController == null)
         {
-            Debug.LogError("UI Managerにスライダー等のオブジェクトが正しく紐付けられていません！");
+            Debug.LogError("EngineControllerが紐付けられていません！");
             return;
         }
 
-        // 1. 初期値を同期
-        rpmSlider.value = engineController.rpm;
-        boreSlider.value = engineController.bore;
-        strokeSlider.value = engineController.stroke;
-        conrodSlider.value = engineController.conrodLength;
-        boostSlider.value = engineController.boost;
+        // UI Documentからルート要素を取得
+        var root = GetComponent<UIDocument>().rootVisualElement;
+
+        // 1. UI Builderで設定した「Name（ID）」を元に部品を取得
+        // ※ UI Builder側でこれらのNameを設定しておく必要があります
+        rpmSlider = root.Q<Slider>("slider-rpm");
+        boreSlider = root.Q<Slider>("slider-bore");
+        strokeSlider = root.Q<Slider>("slider-stroke");
+        conrodSlider = root.Q<Slider>("slider-conrod");
+        boostSlider = root.Q<Slider>("slider-boost");
+
+        rpmText = root.Q<Label>("text-rpm");
+        boreText = root.Q<Label>("text-bore");
+        strokeText = root.Q<Label>("text-stroke");
+        conrodText = root.Q<Label>("text-conrod");
+        boostText = root.Q<Label>("text-boost");
+
+        angleText = root.Q<Label>("text-angle");
+        pressureText = root.Q<Label>("text-pressure");
+        temperatureText = root.Q<Label>("text-temperature");
+        strokePhaseText = root.Q<Label>("text-stroke-phase");
+
+        // 2. 初期値を同期
+        if (rpmSlider != null) rpmSlider.value = engineController.rpm;
+        if (boreSlider != null) boreSlider.value = engineController.bore;
+        if (strokeSlider != null) strokeSlider.value = engineController.stroke;
+        if (conrodSlider != null) conrodSlider.value = engineController.conrodLength;
+        if (boostSlider != null) boostSlider.value = engineController.boost;
 
         UpdateSliderTexts();
 
-        // 2. リスナー登録
-        rpmSlider.onValueChanged.AddListener(OnRpmChanged);
-        boreSlider.onValueChanged.AddListener(OnBoreChanged);
-        strokeSlider.onValueChanged.AddListener(OnStrokeChanged);
-        conrodSlider.onValueChanged.AddListener(OnConrodChanged);
-        boostSlider.onValueChanged.AddListener(OnBoostChanged);
+        // 3. リスナー登録 (UI Toolkitの書き方)
+        if (rpmSlider != null) rpmSlider.RegisterValueChangedCallback(evt => OnRpmChanged(evt.newValue));
+        if (boreSlider != null) boreSlider.RegisterValueChangedCallback(evt => OnBoreChanged(evt.newValue));
+        if (strokeSlider != null) strokeSlider.RegisterValueChangedCallback(evt => OnStrokeChanged(evt.newValue));
+        if (conrodSlider != null) conrodSlider.RegisterValueChangedCallback(evt => OnConrodChanged(evt.newValue));
+        if (boostSlider != null) boostSlider.RegisterValueChangedCallback(evt => OnBoostChanged(evt.newValue));
 
         UpdateSimulation();
     }
@@ -63,21 +78,22 @@ public class EngineUiController : MonoBehaviour
         if (engineController != null)
         {
             float currentAngle = engineController.GetCurrentAngle(); 
-            var currentPoint = engineController.GetSimulationPointAtAngle(currentAngle);
+            var currentPoint = engineController.GetSimulationPointAtAngle(currentAngle); //[cite: 1]
 
             if (angleText != null) angleText.text = $"クランク角: {currentAngle:F0}°";
             if (pressureText != null) pressureText.text = $"筒内圧力: {currentPoint.pressureMpa:F3} MPa";
             if (temperatureText != null) temperatureText.text = $"筒内温度: {(currentPoint.temperatureK - 273.15f):F1} ℃";
             
-            UpdateStrokePhaseText(currentAngle);
+            UpdateStrokePhaseText(currentAngle); //[cite: 1]
         }
     }
 
-    private void OnRpmChanged(float value) { engineController.rpm = value; UpdateSliderTexts(); UpdateSimulation(); }
-    private void OnBoreChanged(float value) { engineController.bore = value; UpdateSliderTexts(); UpdateSimulation(); }
-    private void OnStrokeChanged(float value) { engineController.stroke = value; UpdateSliderTexts(); UpdateSimulation(); }
-    private void OnConrodChanged(float value) { engineController.conrodLength = value; UpdateSliderTexts(); UpdateSimulation(); }
-    private void OnBoostChanged(float value) { engineController.boost = value; UpdateSliderTexts(); UpdateSimulation(); }
+    // イベントリスナー
+    private void OnRpmChanged(float value) { engineController.rpm = value; UpdateSliderTexts(); UpdateSimulation(); } //[cite: 1]
+    private void OnBoreChanged(float value) { engineController.bore = value; UpdateSliderTexts(); UpdateSimulation(); } //[cite: 1]
+    private void OnStrokeChanged(float value) { engineController.stroke = value; UpdateSliderTexts(); UpdateSimulation(); } //[cite: 1]
+    private void OnConrodChanged(float value) { engineController.conrodLength = value; UpdateSliderTexts(); UpdateSimulation(); } //[cite: 1]
+    private void OnBoostChanged(float value) { engineController.boost = value; UpdateSliderTexts(); UpdateSimulation(); } //[cite: 1]
 
     private void UpdateSliderTexts()
     {
@@ -90,37 +106,13 @@ public class EngineUiController : MonoBehaviour
 
     private void UpdateSimulation()
     {
-        engineController.RecalculatePhysics();
+        engineController.RecalculatePhysics(); //[cite: 1]
         UpdateGraphs();
     }
 
     private void UpdateGraphs()
     {
-        if (pvChart == null) return;
-        
-        // 1. グラフの古いデータをクリア
-        pvChart.ClearData(); 
-        
-        var simPoints = engineController.GetSimulationPoints(); 
-        if (simPoints == null || simPoints.Length == 0) return;
-
-        // 【修正：Listのインデックス指定 [0] を使用して自動ソートを解除】
-        // if (pvChart.series != null && pvChart.series.Count > 0)
-        // {
-        //     // バージョンによるプロパティ名の違いを吸収するため、try-catch、または直接指定します
-        //     // 通常、3.x系は大文字スタートの ShowDataSort です
-        //     pvChart.series[0].showDataSort = false;
-        // }
-
-        // 2. 4つ飛ばしでプロット（負荷軽減）
-        for (int i = 0; i < simPoints.Length; i += 4) 
-        {
-            // X軸：Volume(cc)、Y軸：Pressure(MPa)
-            pvChart.AddData(0, (float)simPoints[i].volumeCc, (float)simPoints[i].pressureMpa);
-        }
-        
-        // 3. グラフを画面に再描画
-        pvChart.RefreshChart(); 
+        // ※ グラフの処理については下記「XChartsについて」を参照
     }
 
     private void UpdateStrokePhaseText(float angle)
@@ -129,18 +121,19 @@ public class EngineUiController : MonoBehaviour
         float normalizedAngle = angle % 720f;
         if (normalizedAngle < 0) normalizedAngle += 720f;
 
+        // UI Toolkitでは style.color に Color 構造体を渡します
         if (normalizedAngle >= 0 && normalizedAngle < 180) {
-            strokePhaseText.text = "行程: ① 吸気 (Intake)";
-            strokePhaseText.color = new Color(0.3f, 0.6f, 1.0f);
+            strokePhaseText.text = "行程: ① 吸気 (Intake)"; //[cite: 1]
+            strokePhaseText.style.color = new StyleColor(new Color(0.3f, 0.6f, 1.0f)); //[cite: 1]
         } else if (normalizedAngle >= 180 && normalizedAngle < 360) {
-            strokePhaseText.text = "行程: ② 圧縮 (Compression)";
-            strokePhaseText.color = new Color(1.0f, 0.7f, 0.3f);
+            strokePhaseText.text = "行程: ② 圧縮 (Compression)"; //[cite: 1]
+            strokePhaseText.style.color = new StyleColor(new Color(1.0f, 0.7f, 0.3f)); //[cite: 1]
         } else if (normalizedAngle >= 360 && normalizedAngle < 540) {
-            strokePhaseText.text = "行程: ③ 燃焼膨張 (Power)";
-            strokePhaseText.color = new Color(1.0f, 0.3f, 0.3f);
+            strokePhaseText.text = "行程: ③ 燃焼膨張 (Power)"; //[cite: 1]
+            strokePhaseText.style.color = new StyleColor(new Color(1.0f, 0.3f, 0.3f)); //[cite: 1]
         } else {
-            strokePhaseText.text = "行程: ④ 排気 (Exhaust)";
-            strokePhaseText.color = Color.gray;
+            strokePhaseText.text = "行程: ④ 排気 (Exhaust)"; //[cite: 1]
+            strokePhaseText.style.color = new StyleColor(Color.gray); //[cite: 1]
         }
     }
 }

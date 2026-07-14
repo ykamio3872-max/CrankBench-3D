@@ -1,9 +1,9 @@
 ﻿<Solution>
   <Project Path="Unity.Timeline.csproj" />
   <Project Path="Unity.PlasticSCM.Editor.csproj" />
-  <Project Path="XCharts.Runtime.csproj" />
   <Project Path="Unity.Purchasing.csproj" />
   <Project Path="Unity.Services.Core.Internal.csproj" />
+  <Project Path="XCharts.Runtime.csproj" />
   <Project Path="Unity.Purchasing.PaymentProviderService.csproj" />
   <Project Path="Unity.Microsoft.GDK.csproj" />
   <Project Path="Unity.Purchasing.Stores.csproj" />

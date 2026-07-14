@@ -1,0 +1,30 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="root-Container" style="flex-grow: 1; width: 100%; height: 100%; flex-direction: row; background-color: rgb(56, 56, 56);">
+        <ui:VisualElement name="left-panel" style="flex-grow: 0; width: 300px; flex-shrink: 0;">
+            <ui:Label text="Label" name="text-stroke-phase" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);"/>
+            <ui:Slider label="エンジン回転数（rpm）" value="2000" high-value="9000" name="slider-rpm" low-value="1000" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px;">
+                <ui:Label text="Label" name="text-rpm" style="text-overflow: clip; align-items: stretch; justify-content: flex-start;"/>
+            </ui:Slider>
+            <ui:Slider label="ボア径" value="64" high-value="80" name="slider-bore" low-value="50" fill="false" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px;">
+                <ui:Label text="Label" name="text-bore"/>
+            </ui:Slider>
+            <ui:Slider label="ストローク長" value="68.2" high-value="90" name="slider-stroke" low-value="60" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px;">
+                <ui:Label text="Label" name="text-stroke"/>
+            </ui:Slider>
+            <ui:Slider label="コンロッド長" value="120" high-value="150" name="slider-conrod" low-value="80" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px;">
+                <ui:Label text="Label" name="text-conrod"/>
+            </ui:Slider>
+            <ui:Slider label="ブースト圧" value="42" high-value="100" name="slider-boost" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);">
+                <ui:Label text="Label" name="text-boost"/>
+            </ui:Slider>
+            <ui:Label text="Label" name="text-angle" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px;"/>
+            <ui:Label text="Label" name="text-pressure" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);"/>
+            <ui:Label text="Label" name="text-temperature" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="center-panel" style="flex-grow: 1; flex-shrink: 0;">
+            <ui:VisualElement name="viewport-3D" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/EngineRenderTexture.renderTexture?fileID=8400000&amp;guid=8f55b58d0199cfa458f520ba7c48109d&amp;type=2#EngineRenderTexture&quot;); height: auto; width: auto; -unity-background-scale-mode: scale-to-fit;"/>
+            <ui:VisualElement name="graph-area" style="flex-grow: 1;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="right-panel" style="flex-grow: 0; width: 350px; flex-shrink: 0;"/>
+    </ui:VisualElement>
+</ui:UXML>
