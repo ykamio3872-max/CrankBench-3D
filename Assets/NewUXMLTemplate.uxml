@@ -17,9 +17,9 @@
             <ui:Slider label="ブースト圧" value="42" high-value="100" name="slider-boost" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);">
                 <ui:Label text="Label" name="text-boost"/>
             </ui:Slider>
-            <ui:Label text="Label" name="text-angle" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px;"/>
-            <ui:Label text="Label" name="text-pressure" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);"/>
-            <ui:Label text="Label" name="text-temperature" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204);"/>
+            <ui:Label text="Label" name="text-pressure" style="margin-top: 100px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204); -unity-text-align: middle-left;"/>
+            <ui:Label text="Label" name="text-temperature" style="margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; color: rgb(204, 204, 204); -unity-text-align: middle-left;"/>
+            <ui:Label text="Label" name="text-angle" style="color: rgb(204, 204, 204); margin-top: 30px; margin-right: 5px; margin-bottom: 30px; margin-left: 5px; -unity-text-align: middle-left;"/>
         </ui:VisualElement>
         <ui:VisualElement name="center-panel" style="flex-grow: 1; flex-shrink: 0;">
             <ui:VisualElement name="viewport-3D" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/EngineRenderTexture.renderTexture?fileID=8400000&amp;guid=8f55b58d0199cfa458f520ba7c48109d&amp;type=2#EngineRenderTexture&quot;); height: auto; width: auto; -unity-background-scale-mode: scale-to-fit;"/>

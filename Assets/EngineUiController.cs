@@ -24,7 +24,7 @@ public class EngineUiController : MonoBehaviour
     private Label temperatureText;
     private Label strokePhaseText;
 
-    void OnEnable() // ★Startではなく、UIが有効になったタイミングで取得します
+    void Start() // ★Startではなく、UIが有効になったタイミングで取得します
     {
         if (engineController == null)
         {
@@ -34,6 +34,11 @@ public class EngineUiController : MonoBehaviour
 
         // UI Documentからルート要素を取得
         var root = GetComponent<UIDocument>().rootVisualElement;
+        if (root == null)
+        {
+            Debug.LogWarning("rootVisualElementが取得できませんでした。");
+            return;
+        }
 
         // 1. UI Builderで設定した「Name（ID）」を元に部品を取得
         // ※ UI Builder側でこれらのNameを設定しておく必要があります
