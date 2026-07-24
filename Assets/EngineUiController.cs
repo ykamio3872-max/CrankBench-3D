@@ -59,6 +59,18 @@ public class EngineUiController : MonoBehaviour
         temperatureText = root.Q<Label>("text-temperature");
         strokePhaseText = root.Q<Label>("text-stroke-phase");
 
+        angleText = root.Q<Label>("text-angle");
+        if (angleText == null) Debug.LogError("❌ 'text-angle' というNameのLabelが見つかりません！");
+
+        pressureText = root.Q<Label>("text-pressure");
+        if (pressureText == null) Debug.LogError("❌ 'text-pressure' というNameのLabelが見つかりません！");
+
+        temperatureText = root.Q<Label>("text-temperature");
+        if (temperatureText == null) Debug.LogError("❌ 'text-temperature' というNameのLabelが見つかりません！");
+
+        strokePhaseText = root.Q<Label>("text-stroke-phase");
+        if (strokePhaseText == null) Debug.LogError("❌ 'text-stroke-phase' というNameのLabelが見つかりません！");
+        
         // 2. 初期値を同期
         if (rpmSlider != null) rpmSlider.value = engineController.rpm;
         if (boreSlider != null) boreSlider.value = engineController.bore;
@@ -76,6 +88,8 @@ public class EngineUiController : MonoBehaviour
         if (boostSlider != null) boostSlider.RegisterValueChangedCallback(evt => OnBoostChanged(evt.newValue));
 
         UpdateSimulation();
+
+        Debug.Log($"[UI診断] rpmSlider: {rpmSlider != null} / angleText: {angleText != null} / pressureText: {pressureText != null}");
     }
 
     void Update()
@@ -83,6 +97,8 @@ public class EngineUiController : MonoBehaviour
         if (engineController != null)
         {
             float currentAngle = engineController.GetCurrentAngle(); 
+
+            Debug.Log($"[リアルタイム確認] 現在の角度: {currentAngle}");
             var currentPoint = engineController.GetSimulationPointAtAngle(currentAngle); //[cite: 1]
 
             if (angleText != null) angleText.text = $"クランク角: {currentAngle:F0}°";

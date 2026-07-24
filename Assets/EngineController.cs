@@ -59,6 +59,7 @@ public class EngineController : MonoBehaviour
     void Start()
     {
         RecalculatePhysics();
+        
     }
 
     void Update()
